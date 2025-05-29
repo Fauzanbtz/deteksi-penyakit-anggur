@@ -32,22 +32,10 @@ interface DetectionResult {
   confidence: number;
 }
 
-interface AnalysisResult {
-  predictions: DetectionResult[];
-  objects: {
-    name: string;
-    bbox: number[];
-    confidence: number;
-  }[];
-  colors: string[];
-  tags: string[];
-}
-
 export default function HomePage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [detectionResults, setDetectionResults] = useState<DetectionResult[]>([])
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
 
   const handleDetectionResults = (results: DetectionResult[]) => {
     setDetectionResults(results);
@@ -70,11 +58,19 @@ export default function HomePage() {
     setIsAnalyzing(true)
     // Simulate ML analysis
     setTimeout(() => {
-      setDetectionResults([
-        { label: "Cat", confidence: 0.95 },
-        { label: "Domestic Animal", confidence: 0.89 },
-        { label: "Mammal", confidence: 0.87 },
-      ])
+      setAnalysisResult({
+        predictions: [
+          { label: "Cat", confidence: 0.95 },
+          { label: "Domestic Animal", confidence: 0.89 },
+          { label: "Mammal", confidence: 0.87 },
+        ],
+        objects: [
+          { name: "Cat", bbox: [120, 80, 200, 160], confidence: 0.92 },
+          { name: "Eyes", bbox: [140, 95, 180, 115], confidence: 0.88 },
+        ],
+        colors: ["#8B4513", "#FFFFFF", "#000000"],
+        tags: ["pet", "animal", "cute", "furry"],
+      })
       setIsAnalyzing(false)
     }, 2000)
   }

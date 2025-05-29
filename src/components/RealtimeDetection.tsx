@@ -16,38 +16,35 @@ const CLASS_LABELS = [
   'Grape___healthy'
 ];
 
-interface DetectionResult {
-  label: string;
-  confidence: number;
-}
-
-interface RealtimeDetectionProps {
-  onDetectionResults?: (results: DetectionResult[]) => void;
-}
-
-export default function RealtimeDetection({ onDetectionResults }: RealtimeDetectionProps) {
+export default function RealtimeDetection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [model, setModel] = useState<tf.GraphModel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [predictedClass, setPredictedClass] = useState<string>('Initializing...');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [detectionResults, setDetectionResults] = useState<DetectionResult[]>([]);
 
   // Initialize TensorFlow.js and load model
   useEffect(() => {
     const initializeTF = async () => {
       try {
+        // Set backend ke WebGL
         await tf.setBackend('webgl');
+        
+        // Tunggu TensorFlow.js siap
         await tf.ready();
 
+        // Load model menggunakan loadGraphModel
         const modelPath = '/tfjs_model/model.json';
+
+        // Cek akses model.json
         const response = await fetch(modelPath);
         if (!response.ok) {
           throw new Error(`Failed to fetch model.json: ${response.status} ${response.statusText}`);
         }
         await response.json();
 
+        // Load model dengan konfigurasi yang sesuai
         const loadedModel = await tf.loadGraphModel(modelPath, {
           fromTFHub: false
         });
@@ -115,27 +112,10 @@ export default function RealtimeDetection({ onDetectionResults }: RealtimeDetect
       const predictions = model.execute(imgTensor) as tf.Tensor;
       const scores = predictions.dataSync();
 
-      // Create array of results with confidence scores
-      const results: DetectionResult[] = CLASS_LABELS.map((label, index) => ({
-        label,
-        confidence: scores[index]
-      }));
-
-      // Sort results by confidence
-      results.sort((a, b) => b.confidence - a.confidence);
-
-      // Update state with all results
-      setDetectionResults(results);
-      
-      // Notify parent component of results
-      if (onDetectionResults) {
-        onDetectionResults(results);
-      }
-
-      // Set the highest confidence prediction
       const maxIndex = scores.indexOf(Math.max(...scores));
       const confidence = scores[maxIndex];
       const predictedClass = CLASS_LABELS[maxIndex];
+
       setPredictedClass(`${predictedClass} (${(confidence * 100).toFixed(2)}%)`);
 
       tf.dispose([imgTensor, predictions]);
@@ -181,7 +161,7 @@ export default function RealtimeDetection({ onDetectionResults }: RealtimeDetect
           <img
             src={selectedImage}
             alt="Uploaded"
-            className="w-full max-w-2xl mx-auto rounded-lg shadow-lg"
+            className="w-full max-w-2xl mx-auto"
           />
         </div>
       )}
