@@ -32,10 +32,22 @@ interface DetectionResult {
   confidence: number;
 }
 
+interface AnalysisResult {
+  predictions: DetectionResult[];
+  objects: {
+    name: string;
+    bbox: number[];
+    confidence: number;
+  }[];
+  colors: string[];
+  tags: string[];
+}
+
 export default function HomePage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [detectionResults, setDetectionResults] = useState<DetectionResult[]>([])
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
 
   const handleDetectionResults = (results: DetectionResult[]) => {
     setDetectionResults(results);
