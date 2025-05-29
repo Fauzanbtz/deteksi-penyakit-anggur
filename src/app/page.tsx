@@ -70,19 +70,11 @@ export default function HomePage() {
     setIsAnalyzing(true)
     // Simulate ML analysis
     setTimeout(() => {
-      setAnalysisResult({
-        predictions: [
-          { label: "Cat", confidence: 0.95 },
-          { label: "Domestic Animal", confidence: 0.89 },
-          { label: "Mammal", confidence: 0.87 },
-        ],
-        objects: [
-          { name: "Cat", bbox: [120, 80, 200, 160], confidence: 0.92 },
-          { name: "Eyes", bbox: [140, 95, 180, 115], confidence: 0.88 },
-        ],
-        colors: ["#8B4513", "#FFFFFF", "#000000"],
-        tags: ["pet", "animal", "cute", "furry"],
-      })
+      setDetectionResults([
+        { label: "Cat", confidence: 0.95 },
+        { label: "Domestic Animal", confidence: 0.89 },
+        { label: "Mammal", confidence: 0.87 },
+      ])
       setIsAnalyzing(false)
     }, 2000)
   }
