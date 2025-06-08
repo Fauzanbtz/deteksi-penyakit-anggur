@@ -1,151 +1,90 @@
+// src/components/RealtimeDetection.tsx
+
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import * as tf from '@tensorflow/tfjs';
-import '@tensorflow/tfjs-backend-webgl';
+import { useState } from 'react';
 
-// Definisikan ukuran input model
-const IMG_WIDTH = 224;
-const IMG_HEIGHT = 224;
+interface DetectionResult {
+  label: string;
+  confidence: number;
+}
 
-// Definisikan nama-nama kelas sesuai urutan di model Anda
-const CLASS_LABELS = [
-  'Grape___Black_rot',
-  'Grape___Esca_(Black_Measles)',
-  'Grape___Leaf_blight_(Isariopsis_Leaf_Spot)',
-  'Grape___healthy'
-];
+interface RealtimeDetectionProps {
+  onDetectionResults: (results: DetectionResult[]) => void;
+  onAnalysisStart: () => void;
+  onAnalysisEnd: () => void;
+  onError: (errorMessage: string) => void;
+}
 
-export default function RealtimeDetection() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [model, setModel] = useState<tf.GraphModel | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [predictedClass, setPredictedClass] = useState<string>('Initializing...');
+const API_URL = 'https://zubetz-KLASIFIKASI-CITRA-DAUN-ANGGUR.hf.space/predict';
+
+export default function RealtimeDetection({ 
+  onDetectionResults, 
+  onAnalysisStart, 
+  onAnalysisEnd,
+  onError
+}: RealtimeDetectionProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  // Initialize TensorFlow.js and load model
-  useEffect(() => {
-    const initializeTF = async () => {
-      try {
-        // Set backend ke WebGL
-        await tf.setBackend('webgl');
-        
-        // Tunggu TensorFlow.js siap
-        await tf.ready();
-
-        // Load model menggunakan loadGraphModel
-        const modelPath = '/tfjs_model/model.json';
-
-        // Cek akses model.json
-        const response = await fetch(modelPath);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch model.json: ${response.status} ${response.statusText}`);
-        }
-        await response.json();
-
-        // Load model dengan konfigurasi yang sesuai
-        const loadedModel = await tf.loadGraphModel(modelPath, {
-          fromTFHub: false
-        });
-
-        setModel(loadedModel);
-        setIsLoading(false);
-        setPredictedClass('Model loaded. Ready to analyze images.');
-      } catch (err) {
-        console.error('Error initializing TensorFlow.js or loading model:', err);
-        setError(err instanceof Error ? err.message : 'Failed to load model');
-        setIsLoading(false);
-        setPredictedClass('Failed to load model.');
-      }
-    };
-
-    initializeTF();
-
-    return () => {
-      if (model) {
-        model.dispose();
-      }
-    };
-  }, []);
-
-  // Handle image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         setSelectedImage(e.target?.result as string);
-        analyzeImage(e.target?.result as string);
       };
       reader.readAsDataURL(file);
+      
+      analyzeImageWithAPI(file);
     }
   };
 
-  // Analyze uploaded image
-  const analyzeImage = async (imageData: string) => {
-    if (!model) return;
+  const analyzeImageWithAPI = async (imageFile: File) => {
+    onAnalysisStart();
+    onDetectionResults([]);
+    onError('');
+
+    const formData = new FormData();
+    formData.append('file', imageFile);
 
     try {
-      const img = new Image();
-      img.src = imageData;
-      await new Promise((resolve) => {
-        img.onload = resolve;
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: formData,
       });
 
-      const canvas = document.createElement('canvas');
-      canvas.width = IMG_WIDTH;
-      canvas.height = IMG_HEIGHT;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Server error: ${response.statusText}`);
+      }
 
-      ctx.drawImage(img, 0, 0, IMG_WIDTH, IMG_HEIGHT);
-
-      const imgTensor = tf.tidy(() => {
-        return tf.browser.fromPixels(canvas)
-          .toFloat()
-          .div(255.0)
-          .expandDims(0);
+      const result = await response.json();
+      
+      const allProbs = result.all_probabilities;
+      const formattedResults: DetectionResult[] = Object.entries(allProbs).map(([label, confidenceStr]) => {
+        const confidenceValue = parseFloat((confidenceStr as string).replace('%', '')) / 100;
+        return {
+          label: label,
+          confidence: confidenceValue
+        };
       });
 
-      // Run detection using execute()
-      const predictions = model.execute(imgTensor) as tf.Tensor;
-      const scores = predictions.dataSync();
+      formattedResults.sort((a, b) => b.confidence - a.confidence);
 
-      const maxIndex = scores.indexOf(Math.max(...scores));
-      const confidence = scores[maxIndex];
-      const predictedClass = CLASS_LABELS[maxIndex];
+      onDetectionResults(formattedResults);
 
-      setPredictedClass(`${predictedClass} (${(confidence * 100).toFixed(2)}%)`);
-
-      tf.dispose([imgTensor, predictions]);
     } catch (err) {
-      console.error('Error analyzing image:', err);
-      setError('Error analyzing image: ' + (err instanceof Error ? err.message : String(err)));
+      console.error('Error calling API:', err);
+      onError(err instanceof Error ? err.message : 'An unknown error occurred');
+    } finally {
+      onAnalysisEnd();
     }
   };
-
-  if (error) {
-    return (
-      <div className="text-red-500 p-4 border border-red-500 rounded">
-        Error: {error}
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        <span className="ml-2">{predictedClass}</span>
-      </div>
-    );
-  }
 
   return (
     <div className="relative">
       <div className="flex flex-col gap-4 mb-4">
-        <label className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors cursor-pointer text-center">
+        <label className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer text-center font-semibold">
           Upload Image
           <input
             type="file"
@@ -157,18 +96,14 @@ export default function RealtimeDetection() {
       </div>
 
       {selectedImage && (
-        <div className="relative">
+        <div className="relative mt-4 border rounded-lg overflow-hidden">
           <img
             src={selectedImage}
-            alt="Uploaded"
-            className="w-full max-w-2xl mx-auto"
+            alt="Uploaded for analysis"
+            className="w-full h-auto"
           />
         </div>
       )}
-
-      <div className="mt-4 text-center">
-        <p className="text-lg font-semibold">{predictedClass}</p>
-      </div>
     </div>
   );
 }
