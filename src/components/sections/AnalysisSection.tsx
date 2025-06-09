@@ -40,8 +40,8 @@ export default function AnalysisSection() {
           {/* Kolom Upload Gambar */}
           <Card className="p-6 shadow-sm">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Camera className="w-5 h-5" /> Image Upload</CardTitle>
-              <CardDescription>Upload an image to start disease detection</CardDescription>
+              <CardTitle className="flex items-center gap-2"><Camera className="w-5 h-5" /> Unggah Gambar</CardTitle>
+              <CardDescription>Unggah gambar untuk memulai deteksi penyakit</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
@@ -61,8 +61,8 @@ export default function AnalysisSection() {
           {/* Kolom Hasil Deteksi & Penanganan */}
           <Card className="p-6 shadow-sm">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><BarChart3 className="w-5 h-5" /> Detection Results</CardTitle>
-              <CardDescription>Disease detection results and confidence scores</CardDescription>
+              <CardTitle className="flex items-center gap-2"><BarChart3 className="w-5 h-5" /> Hasil Deteksi</CardTitle>
+              <CardDescription>Hasil deteksi penyakit dan tingkat kepercayaan</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -102,7 +102,7 @@ export default function AnalysisSection() {
                 {!isAnalyzing && !apiError && detectionResults.length === 0 && (
                    <div className="text-center py-12 text-gray-500">
                      <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                     <p>Upload an image to see detection results</p>
+                     <p>Unggah gambar untuk melihat hasil deteksi</p>
                    </div>
                 )}
               </div>

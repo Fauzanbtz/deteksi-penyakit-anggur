@@ -8,52 +8,52 @@ export default function FeaturesSection() {
         <section id="features" className="py-20 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Powerful AI Features</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Fitur AI yang Kuat</h2>
                     <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                        Our advanced machine learning models provide comprehensive image analysis capabilities
+                        Model pembelajaran mesin kami yang canggih menyediakan kemampuan analisis gambar yang komprehensif
                     </p>
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <Card className="p-6 hover:shadow-lg transition-shadow">
-                        <CardHeader>
+                    <Card className="p-6 hover:shadow-lg transition-shadow bg-gray-100">
+                        <CardHeader className="flex flex-col items-center justify-center text-center">
                             <Brain className="w-12 h-12 text-blue-600 mb-4" />
-                            <CardTitle>Object Detection</CardTitle>
-                            <CardDescription>Identify and locate multiple objects within images with precise bounding boxes</CardDescription>
+                            <CardTitle>Deteksi Objek</CardTitle>
+                            <CardDescription>Mengidentifikasi dan menemukan beberapa objek dalam gambar dengan kotak pembatas yang presisi</CardDescription>
                         </CardHeader>
                     </Card>
-                    <Card className="p-6 hover:shadow-lg transition-shadow">
-                         <CardHeader>
+                    <Card className="p-6 hover:shadow-lg transition-shadow bg-gray-100">
+                         <CardHeader className="flex flex-col items-center justify-center text-center">
                             <BarChart3 className="w-12 h-12 text-green-600 mb-4" />
-                            <CardTitle>Image Classification</CardTitle>
-                            <CardDescription>Classify images into thousands of categories with confidence scores</CardDescription>
+                            <CardTitle>Klasifikasi Gambar</CardTitle>
+                            <CardDescription>Mengklasifikasikan gambar ke dalam ribuan kategori dengan skor kepercayaan</CardDescription>
                         </CardHeader>
                     </Card>
-                    <Card className="p-6 hover:shadow-lg transition-shadow">
-                        <CardHeader>
+                    <Card className="p-6 hover:shadow-lg transition-shadow bg-gray-100">
+                        <CardHeader className="flex flex-col items-center justify-center text-center">
                             <Zap className="w-12 h-12 text-yellow-600 mb-4" />
-                            <CardTitle>Real-time Analysis</CardTitle>
-                            <CardDescription>Get instant results with our optimized inference pipeline</CardDescription>
+                            <CardTitle>Analisis Real-time</CardTitle>
+                            <CardDescription>Dapatkan hasil instan dengan pipeline inferensi yang dioptimalkan</CardDescription>
                         </CardHeader>
                     </Card>
-                    <Card className="p-6 hover:shadow-lg transition-shadow">
-                        <CardHeader>
+                    <Card className="p-6 hover:shadow-lg transition-shadow bg-gray-100">
+                        <CardHeader className="flex flex-col items-center justify-center text-center">
                             <Shield className="w-12 h-12 text-red-600 mb-4" />
-                            <CardTitle>Privacy First</CardTitle>
-                            <CardDescription>Your images are processed securely and never stored permanently</CardDescription>
+                            <CardTitle>Privasi Utama</CardTitle>
+                            <CardDescription>Gambar Anda diproses secara aman dan tidak pernah disimpan secara permanen</CardDescription>
                         </CardHeader>
                     </Card>
-                    <Card className="p-6 hover:shadow-lg transition-shadow">
-                        <CardHeader>
+                    <Card className="p-6 hover:shadow-lg transition-shadow bg-gray-100">
+                        <CardHeader className="flex flex-col items-center justify-center text-center">
                             <Award className="w-12 h-12 text-purple-600 mb-4" />
-                            <CardTitle>High Accuracy</CardTitle>
-                            <CardDescription>State-of-the-art models trained on millions of images for maximum precision</CardDescription>
+                            <CardTitle>Akurasi Tinggi</CardTitle>
+                            <CardDescription>Model canggih yang dilatih dengan jutaan gambar untuk presisi maksimal</CardDescription>
                         </CardHeader>
                     </Card>
-                    <Card className="p-6 hover:shadow-lg transition-shadow">
-                        <CardHeader>
+                    <Card className="p-6 hover:shadow-lg transition-shadow bg-gray-100">
+                        <CardHeader className="flex flex-col items-center justify-center text-center">
                             <Users className="w-12 h-12 text-indigo-600 mb-4" />
-                            <CardTitle>API Access</CardTitle>
-                            <CardDescription>Integrate our AI capabilities into your applications with our REST API</CardDescription>
+                            <CardTitle>Akses API</CardTitle>
+                            <CardDescription>Integrasikan kemampuan AI kami ke dalam aplikasi Anda dengan REST API kami</CardDescription>
                         </CardHeader>
                     </Card>
                 </div>
